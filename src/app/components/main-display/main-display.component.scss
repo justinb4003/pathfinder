@@ -1,0 +1,45 @@
+.main-container {
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-row {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  flex-direction: row;
+}
+
+.bottom-row {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: row;
+}
+
+.main-display {
+  background-color: red;
+  width: 80%;
+  height: 100%;
+}
+
+.keyhole-display-params {
+  background-color: magenta;
+  width: 20%;
+  height: 100%;
+}
+
+.main-display-params {
+  background-color: lime;
+  width: 80%;
+  height: 100%;
+}
+
+.keyhole-display {
+  background-color: blue;
+  width: 20%;
+  height: 100%;
+}
