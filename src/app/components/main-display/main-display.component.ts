@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import * as THREE from 'three';
 
 @Component({
   selector: 'app-main-display',
