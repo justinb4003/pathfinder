@@ -23,6 +23,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
   public bodies: Body[] = [];
 
   private AU: number = 1.496e11;
+  private G: number = 6.67430e-11;
 
   constructor() {}
 
@@ -47,7 +48,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     const earth = {
       label: "Earth",
       pos: [this.AU, 0, 0],
-      vec: [0, 0, 0],
+      vec: [0, 3.0e7, 0],
       mass: 5.97e24,
       radius: 6371e3,
       theta: 0,
@@ -58,16 +59,28 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
 
   public getEarthStep(): Vector3 {
     const earthBody = this.bodies.find((b) => b.label == 'Earth');
-    const currX = earthBody.pos[0];
-    const currY = earthBody.pos[1];
-    const newTheta = earthBody.theta + 0.01
-    earthBody.theta = newTheta;
-    const newX = Math.cos(newTheta) * this.AU;
-    const newY = Math.sin(newTheta) * this.AU;
-    const dx = newX - currX;
-    const dy = newY - currY;
-    earthBody.pos[0] = newX;
-    earthBody.pos[1] = newY;
+    const sunBody = this.bodies.find((b) => b.label == 'Sun');
+    
+    const dx = earthBody.vec[0] * 10;
+    const dy = earthBody.vec[1] * 10;
+    earthBody.pos[0] += dx;
+    earthBody.pos[1] += dy;
+    // Calc the new velocities
+    var bodyDist = Math.hypot(
+      earthBody.pos[0] - sunBody.pos[0],
+      earthBody.pos[1] - sunBody.pos[1]
+    );
+    let fSun = (this.G * sunBody.mass) / (bodyDist**2) 
+    // Need theta? No, stop doing cos/sin for this
+    // Needs to translate to 3d, not stuck in 2d mode, go back to diffeq
+    // Not that hard.  Just write it down, work it out.
+    // Pick back up at 9pm, solve the earth stepping problem
+    // Do it with 3d vectors but leave it 2d math in reality for now
+    // Work in orbit on the camera
+    // Now put in actual numbers for a starting vector setup
+    // Watch it fly!
+    // May need to load in multiple starting points or epochs
+
     return new Vector3(dx, dy, 0);
   }
 
@@ -86,7 +99,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
 
     //Create Scene with geometry, material-> mesh
     var scene = new THREE.Scene();
-    var earth = new THREE.IcosahedronGeometry(10, 4);
+    var earth = new THREE.IcosahedronGeometry(10, 2);
     
     const earthBody = this.bodies.find((b) => b.label == 'Earth') || null;
     const ss = 200 / this.AU;
@@ -101,7 +114,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     var earthMesh = new THREE.Mesh(earth, earthMat);
     scene.add(earthMesh);
     
-    var sun = new THREE.IcosahedronGeometry(20, 4);
+    var sun = new THREE.IcosahedronGeometry(20, 3);
     sun.translate(0, 0, 0);
     var sunMat = new THREE.MeshBasicMaterial({
       color: 0xFFFF11,
