@@ -129,5 +129,8 @@
       }
     }
   },
-  "defaultProject": "pathfinder"
+  "defaultProject": "pathfinder",
+  "cli": {
+    "analytics": "644f0689-deed-4f98-a6d9-cba4b771b4e1"
+  }
 }
