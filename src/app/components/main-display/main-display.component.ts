@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnInit, AfterViewInit, ViewChild } from "@angular/core";
 import * as THREE from 'three';
-import { Vector3 } from "three";
+import { Vector3 } from 'three';
 import { Body } from '../../shared/models/body.model';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export interface vecDelta {
   x: number,
@@ -25,10 +26,15 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
   private AU: number = 1.496e11;
   private G: number = 6.67430e-11;
 
+  // Screen scaling factor
+  private ss: number = 1;
+
   constructor() {}
 
   public ngOnInit(): void {
     this.initBodies();
+    const earthBody = this.bodies.find((b) => b.label === 'Earth');
+    this.ss = 100 / earthBody.radius;
   }
 
   public ngAfterViewInit(): void {
@@ -70,7 +76,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     
     const sat = {
       label: "JJB01",
-      pos: [earth.radius + 200e3, 0, 0],
+      pos: [earth.radius + 2000e3, 0, 0],
       vec: [0, 6900, 0],
       mass: 1,
       radius: 1,
@@ -139,7 +145,7 @@ public getEarthStep(): Vector3 {
 
 
   public getSatStep(): Vector3 {
-    const dt = 1;
+    const dt = 100;
     const s = this.bodies.find((b) => b.label === 'JJB01');
     const e = this.bodies.find((b) => b.label === 'Earth');
     // console.log('Sat vector', s.vec);
@@ -171,8 +177,8 @@ public getEarthStep(): Vector3 {
     */
     const xa = Math.cos(theta) * F;
     const ya = Math.sin(theta) * F;
-    s.vec[0] += xa;
-    s.vec[1] += ya;
+    s.vec[0] += xa * dt;
+    s.vec[1] += ya * dt;
     // console.log(xa, ya);
 
     return new Vector3(dx, dy, dz);
@@ -192,17 +198,19 @@ public getEarthStep(): Vector3 {
     var camera = new THREE.PerspectiveCamera(75, w / h, 2, 1000);
     camera.position.z = 400;
 
+    const controls = new OrbitControls( camera, renderer.domElement );
+
+    const earthBody = this.bodies.find((b) => b.label == 'Earth') || null;
+    const satBody = this.bodies.find((b) => b.label == 'JJB01') || null;
+
     //Create Scene with geometry, material-> mesh
     var scene = new THREE.Scene();
     //var earthRail = new THREE.IcosahedronGeometry(10, 4);
-    var earth = new THREE.IcosahedronGeometry(10, 4);
+    var earth = new THREE.IcosahedronGeometry(earthBody.radius * this.ss, 4);
     var sat = new THREE.IcosahedronGeometry(4, 2);
     
-    const earthBody = this.bodies.find((b) => b.label == 'Earth') || null;
-    const satBody = this.bodies.find((b) => b.label == 'JJB01') || null;
-    const ss = 100 / earthBody.radius;
     const bpos = satBody.pos;
-    sat.translate(bpos[0] * ss, bpos[1] * ss, bpos[2] * ss);
+    sat.translate(bpos[0] * this.ss, bpos[1] * this.ss, bpos[2] * this.ss);
     
     /*
     var earthRailMat = new THREE.MeshBasicMaterial({
@@ -245,15 +253,15 @@ public getEarthStep(): Vector3 {
     console.log('renderer added');
 
     const self = this;
+    controls.update();
     const animate = function () {
       requestAnimationFrame( animate );
+      controls.update();
       /*
       earth.rotateX(0.001);
       earth.rotateY(0.005);
       */
 			
-	    const ss = 100 / earthBody.radius;
-      
       /*
       var earthRailStep = self.getRailEarthStep();
       earthRail.translate(earthRailStep.x * ss, earthRailStep.y * ss, earthRailStep.z * ss);
@@ -263,7 +271,7 @@ public getEarthStep(): Vector3 {
       */
 
       var satStep = self.getSatStep();
-      sat.translate(satStep.x * ss, satStep.y * ss, satStep.z * ss);
+      sat.translate(satStep.x * self.ss, satStep.y * self.ss, satStep.z * self.ss);
 
       renderer.render( scene, camera );
     };
