@@ -53,7 +53,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     const earthRail = {
       label: "Earth On Rail" ,
       pos: [this.AU, 0, 0],
-      vec: [0, 0, 0],
+      vec: [0, 3.0e7, 0],
       mass: 5.97e24,
       radius: 6371e3,
       theta: 0,
