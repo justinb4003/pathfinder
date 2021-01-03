@@ -206,7 +206,9 @@ public getEarthStep(): Vector3 {
     //Create Scene with geometry, material-> mesh
     var scene = new THREE.Scene();
     //var earthRail = new THREE.IcosahedronGeometry(10, 4);
-    var earth = new THREE.IcosahedronGeometry(earthBody.radius * this.ss, 4);
+    // var earth = new THREE.IcosahedronGeometry(earthBody.radius * this.ss, 4);
+    // var earth = new THREE.SphereGeometry(earthBody.radius * this.ss, 32, 32)
+    var earth = new THREE.SphereGeometry(earthBody.radius * this.ss, 32, 32)
     var sat = new THREE.IcosahedronGeometry(4, 2);
     
     const bpos = satBody.pos;
@@ -221,11 +223,17 @@ public getEarthStep(): Vector3 {
     var earthRailMesh = new THREE.Mesh(earthRail, earthRailMat);
     scene.add(earthRailMesh);
     */
-		  
+      
+    /*
     var earthMat = new THREE.MeshBasicMaterial({
       color: 0x0000FF,
       wireframe: true,
       wireframeLinewidth: 1,
+    });
+    */
+
+    var earthMat = new THREE.MeshPhongMaterial({
+      color: 0x0000FF,
     });
     var earthMesh = new THREE.Mesh(earth, earthMat);
     scene.add(earthMesh);
@@ -237,6 +245,14 @@ public getEarthStep(): Vector3 {
     });
     var satMesh = new THREE.Mesh(sat, satMat);
     scene.add(satMesh);
+
+    var northLight = new THREE.DirectionalLight( 0xffffff );
+    northLight.position.set( 0, 0, earthBody.radius * 200 ).normalize();
+    scene.add(northLight);
+    
+    var southLight = new THREE.DirectionalLight( 0xffffff );
+    southLight.position.set( 0, 0, -earthBody.radius * 200 ).normalize();
+    scene.add(southLight);
     
     /*
     var sun = new THREE.IcosahedronGeometry(20, 4);
