@@ -123,7 +123,7 @@ public getEarthStep(): Vector3 {
     const dist = Math.sqrt(xs + ys);
     const F = -this.G*sunBody.mass / (dist*dist);
     const theta = Math.atan(yd / xd);
-    console.log('theta', theta, Math.sin(theta));
+    // console.log('theta', theta, Math.sin(theta));
     let xf = Math.cos(theta) * F;
     let yf = Math.sin(theta) * F;
 
@@ -161,13 +161,14 @@ public getEarthStep(): Vector3 {
     if (s.pos[0] < 0) {
       theta = Math.PI/2 + (Math.PI/2 + theta);
     }
-    // Ok, figure out 4th quadrant nonsense
+    /*
     console.log(
       theta.toFixed(2),
       'Deg: ', (theta * (180/Math.PI)).toFixed(2),
       Math.cos(theta).toFixed(2),
       Math.sin(theta).toFixed(2),
     );
+    */
     const xa = Math.cos(theta) * F;
     const ya = Math.sin(theta) * F;
     s.vec[0] += xa;
