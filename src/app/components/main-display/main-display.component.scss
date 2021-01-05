@@ -6,6 +6,10 @@
   flex-direction: column;
 }
 
+.flex-me {
+  display: flex;
+}
+
 .top-row {
   width: 100%;
   height: 80%;
@@ -30,6 +34,17 @@
   background-color: magenta;
   width: 20%;
   height: 100%;
+  display: flex;
+}
+
+.keyhole-header {
+  flex-direction: row;
+}
+
+.keyhole-timeline-button {
+  margin-left: 1em;
+  margin-right: 0.5em;
+  height: 3em;
 }
 
 .main-display-params {

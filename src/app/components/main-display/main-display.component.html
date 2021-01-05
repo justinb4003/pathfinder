@@ -4,7 +4,34 @@
       <div style="width: 100%; height: 100%" #glmain></div>
     </div>
     <div class="keyhole-display-params">
-      Keyhole params
+      <div class="flex-me keyhole-header">
+        <div class="flex-me">
+          <button mat-raised-button 
+          (click)="this.beginAnimation()"
+          class="keyhole-timeline-button">Begin</button>
+        </div>
+        <div class="flex-me">
+          <button mat-raised-button 
+          (click)="this.stopAnimation()"
+          class="keyhole-timeline-button">Stop</button>
+        </div>
+      </div>
+      <div style="flex-direction: column">
+        <form>
+          <div class="flex-me">
+            <mat-form-field>
+              <mat-label>Altitude (km)</mat-label>
+              <input matInput placeholder="eg: 200">
+            </mat-form-field>
+          </div>
+          <div class="flex-me">
+            <mat-form-field>
+              <mat-label>Velocity (m/s)</mat-label>
+              <input matInput placeholder="eg: 7900">
+            </mat-form-field>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
   <div class="bottom-row">
