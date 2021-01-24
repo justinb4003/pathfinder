@@ -167,10 +167,10 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     var camera = new THREE.PerspectiveCamera(
       75,
       this.container_width / this.container_height,
-      2,
-      earthBody.radius * 2000
+      200,
+      earthBody.radius * 20000
     );
-    camera.position.z = -earthBody.radius * 10;
+    camera.position.z = -earthBody.radius * 3;
 
 
     var ambLight = new THREE.AmbientLight(0xffffff);
