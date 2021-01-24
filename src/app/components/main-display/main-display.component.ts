@@ -50,14 +50,8 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    // console.log(JSON.stringify(this.bodies, null, 4));
     this.addRenderer();
     this.beginAnimation();
-    /*
-    const step1 = this.getSatStep();
-    const step2 = this.getSatStep();
-    const step3 = this.getSatStep();
-    */
   }
 
   public initBodies(): void {
@@ -236,8 +230,6 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
           wireframe: true,
           wireframeLinewidth: 1,
         });
-
-        console.log('adding mesh');
         const satMesh = new THREE.Mesh(sat, satMat);
         scene.add(satMesh);
         satmeshes.push(satMesh);
@@ -271,9 +263,6 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       satbody: true,
     } as Body;
 
-    console.log(this.bodies.length);
     this.bodies.push(sat);
-    console.log(this.bodies.length);
-    console.log('added new body to system');
   }
 }
