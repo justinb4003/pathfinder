@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MAT_COLOR_FORMATS, NgxMatColorPickerModule, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,12 +18,14 @@ import { MainDisplayComponent } from './components/main-display/main-display.com
   imports: [
     BrowserModule,
     AppRoutingModule,
+    NgxMatColorPickerModule,
     BrowserAnimationsModule, 
     ReactiveFormsModule,
-    MatButtonModule,
-    MatInputModule,
+    MatButtonModule, MatInputModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

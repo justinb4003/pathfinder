@@ -7,9 +7,9 @@ import {
 } from "@angular/core";
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import * as THREE from "three";
-import { Vector3 } from "three";
 import { Body } from "../../shared/models/body.model";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ThemePalette } from '@angular/material/core';
 
 export interface vecDelta {
   x: number;
@@ -26,6 +26,8 @@ export interface vecDelta {
 export class MainDisplayComponent implements OnInit, AfterViewInit {
   @ViewChild("glmain")
   public glmain!: ElementRef;
+
+  public satColor: ThemePalette = 'primary';
 
   private animId: number;
 
@@ -46,6 +48,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       { 
         satAlt: this.fb.control('200'), 
         satVel: this.fb.control('7900'),
+        colorCtr: this.fb.control(null),
       });
   }
 
@@ -225,8 +228,13 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       const satbodies = self.bodies.filter((b) => b.satbody === true);
       while (satmeshes.length < satbodies.length) {
         const sat = new THREE.IcosahedronGeometry(earthBody.radius / 100, 2);
+        let colorstr = '#ff00ff'; 
+        const colorControl = self.fgSat.controls.colorCtr.value;
+        if (colorControl) {
+          colorstr = `#${self.fgSat.controls.colorCtr.value.hex}`;
+        }
         const satMat = new THREE.MeshBasicMaterial({
-          color: 0xff00ff,
+          color: new THREE.Color(colorstr),
           wireframe: true,
           wireframeLinewidth: 1,
         });

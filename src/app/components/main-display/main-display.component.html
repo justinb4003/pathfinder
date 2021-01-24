@@ -31,6 +31,13 @@
             </mat-form-field>
           </div>
           <div class="flex-me">
+            <mat-form-field>
+              <input matInput [ngxMatColorPicker]="picker" formControlName="colorCtr">
+              <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
+              <ngx-mat-color-picker #picker [color]="satColor"></ngx-mat-color-picker>
+            </mat-form-field>
+          </div>
+          <div class="flex-me">
             <button type="button" mat-raised-button (click)="this.addSat()">Add Sat</button>
           </div>
         </form>
