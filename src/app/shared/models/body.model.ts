@@ -5,4 +5,5 @@ export interface Body {
     mass: number;
     radius: number;
     theta: number; // Not permanent at all
+    satbody: boolean;
 }

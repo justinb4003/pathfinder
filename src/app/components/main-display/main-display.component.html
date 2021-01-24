@@ -17,18 +17,21 @@
         </div>
       </div>
       <div style="flex-direction: column">
-        <form>
+        <form [formGroup]="this.fgSat">
           <div class="flex-me">
             <mat-form-field>
               <mat-label>Altitude (km)</mat-label>
-              <input matInput placeholder="eg: 200">
+              <input matInput placeholder="eg: 200" formControlName="satAlt">
             </mat-form-field>
           </div>
           <div class="flex-me">
             <mat-form-field>
               <mat-label>Velocity (m/s)</mat-label>
-              <input matInput placeholder="eg: 7900">
+              <input matInput placeholder="eg: 7900" formControlName="satVel">
             </mat-form-field>
+          </div>
+          <div class="flex-me">
+            <button type="button" mat-raised-button (click)="this.addSat()">Add Sat</button>
           </div>
         </form>
       </div>
