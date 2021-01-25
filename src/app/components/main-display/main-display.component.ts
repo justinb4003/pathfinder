@@ -12,12 +12,6 @@ import { Body } from "../../shared/models/body.model";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ThemePalette } from '@angular/material/core';
 
-export interface vecDelta {
-  x: number;
-  y: number;
-  z: number;
-}
-
 @Component({
   selector: 'app-main-display',
     templateUrl: './main-display.component.html',
@@ -29,7 +23,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
   public glmain!: ElementRef;
 
   public satColor: ThemePalette = 'primary';
-
+  
   private animId: number;
 
   public bodies: Body[] = [];
@@ -101,7 +95,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     } as Body;
 
     this.bodies.push(earth);
-    this.bodies.push(earthFake);
+    // this.bodies.push(earthFake);
     this.bodies.push(sat);
   }
 
