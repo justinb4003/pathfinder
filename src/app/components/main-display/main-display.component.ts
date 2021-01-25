@@ -6,7 +6,8 @@ import {
   ViewChild,
 } from "@angular/core";
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-import * as THREE from "three";
+import * as THREE from 'three';
+import { Vector3 } from 'three';
 import { Body } from "../../shared/models/body.model";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ThemePalette } from '@angular/material/core';
@@ -33,7 +34,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
 
   public bodies: Body[] = [];
 
-  public fgSat: FormGroup; 
+  public fgSat: FormGroup;
 
   private AU: number = 1.496e11;
   private G: number = 6.6743e-11;
@@ -45,8 +46,8 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
   public ngOnInit(): void {
     this.initBodies();
     this.fgSat = this.fb.group(
-      { 
-        satAlt: this.fb.control('200'), 
+      {
+        satAlt: this.fb.control('200'),
         satVel: this.fb.control('7900'),
         colorCtr: this.fb.control(null),
       });
@@ -85,6 +86,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       radius: 1,
       theta: 0,
       satbody: true,
+      trailingPoints: [],
     } as Body;
 
     this.bodies.push(sun);
@@ -99,6 +101,10 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     this.bodies.filter((b) => b.satbody === true).forEach((s) => {
 
       // console.log('Sat vector', s.vec);
+      s.trailingPoints.push(new Vector3(s.pos[0], s.pos[1], s.pos[2]));
+      if (s.trailingPoints.length > 200) {
+        s.trailingPoints.shift();
+      }
       const dx = s.vec[0] * dt;
       const dy = s.vec[1] * dt;
       const dz = s.vec[2] * dt;
@@ -140,7 +146,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private renderer: THREE.WebGLRenderer; 
+  private renderer: THREE.WebGLRenderer;
   private container: any;
   private container_width: number;
   private container_height: number;
@@ -160,7 +166,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
   public beginAnimation(): void {
 
     const earthBody = this.bodies.find((b) => b.label == "Earth") || null;
-    
+
     var scene = new THREE.Scene();
 
     //Add Camera
@@ -200,6 +206,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     scene.add(earthMesh);
 
     var satmeshes: THREE.Mesh[] = [];
+    var sattrails: THREE.Line[] = [];
 
     /*
     var sun = new THREE.IcosahedronGeometry(20, 4);
@@ -228,7 +235,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       const satbodies = self.bodies.filter((b) => b.satbody === true);
       while (satmeshes.length < satbodies.length) {
         const sat = new THREE.IcosahedronGeometry(earthBody.radius / 100, 2);
-        let colorstr = '#ff00ff'; 
+        let colorstr = '#ff00ff';
         const colorControl = self.fgSat.controls.colorCtr.value;
         if (colorControl) {
           colorstr = `#${self.fgSat.controls.colorCtr.value.hex}`;
@@ -241,10 +248,18 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
         const satMesh = new THREE.Mesh(sat, satMat);
         scene.add(satMesh);
         satmeshes.push(satMesh);
+
+        const trailMat = new THREE.LineBasicMaterial( { color: 0xffffff } );
+        const geometry = new THREE.BufferGeometry().setFromPoints( satBody.trailingPoints );
+        const line = new THREE.Line( geometry, trailMat );
+        scene.add(line);
+        sattrails.push(line);
       }
-     
+
       for(const [index, satBody] of satbodies.entries()) {
         satmeshes[index].position.set(satBody.pos[0], satBody.pos[1], satBody.pos[2]);
+        /* Generate trails */
+        sattrails[index].geometry = new THREE.BufferGeometry().setFromPoints( satBody.trailingPoints );
       }
 
       self.renderer.render(scene, camera);
@@ -269,6 +284,8 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       radius: 1,
       theta: 0,
       satbody: true,
+      trailingPoints: [],
+      leadingPoints: [],
     } as Body;
 
     this.bodies.push(sat);
