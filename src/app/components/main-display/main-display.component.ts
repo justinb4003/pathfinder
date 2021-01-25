@@ -78,6 +78,17 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       satbody: false,
     } as Body;
 
+    const earthFake = {
+      label: "Fake Earth",
+      pos: [-100e6, 0, 0],
+      vec: [0, 0, 0],
+      mass: 5.97e24,
+      radius: 6371e3,
+      theta: 0,
+      satbody: false,
+    } as Body;
+
+
     const sat = {
       label: "JJB01",
       pos: [earth.radius + 200e3, 0, 0],
@@ -89,60 +100,51 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
       trailingPoints: [],
     } as Body;
 
-    this.bodies.push(sun);
     this.bodies.push(earth);
+    this.bodies.push(earthFake);
     this.bodies.push(sat);
   }
 
   public performSatStep(): void {
     const dt = 5;
-    const e = this.bodies.find((b) => b.label === "Earth");
 
     this.bodies.filter((b) => b.satbody === true).forEach((s) => {
+			this.bodies.filter((b) => b.satbody ===false).forEach((e) => {
+				// console.log('Sat vector', s.vec);
+				s.trailingPoints.push(new Vector3(s.pos[0], s.pos[1], s.pos[2]));
+				if (s.trailingPoints.length > 200) {
+					s.trailingPoints.shift();
+				}
+				const dx = s.vec[0] * dt;
+				const dy = s.vec[1] * dt;
+				const dz = s.vec[2] * dt;
 
-      // console.log('Sat vector', s.vec);
-      s.trailingPoints.push(new Vector3(s.pos[0], s.pos[1], s.pos[2]));
-      if (s.trailingPoints.length > 200) {
-        s.trailingPoints.shift();
-      }
-      const dx = s.vec[0] * dt;
-      const dy = s.vec[1] * dt;
-      const dz = s.vec[2] * dt;
+				// console.log('Orig', s.pos);
+				s.pos[0] += dx;
+				s.pos[1] += dy;
+				// console.log('Moved', s.pos);
 
-      // console.log('Orig', s.pos);
-      s.pos[0] += dx;
-      s.pos[1] += dy;
-      // console.log('Moved', s.pos);
-
-      // Now calculate gravity forces
-      const xd = s.pos[0] - e.pos[0];
-      const yd = s.pos[1] - e.pos[1];
-      const dist = Math.sqrt(yd * yd + xd * xd);
-      if (dist < e.radius) {
-        // Sat explodes, or something. So, shove it in the Earth for now
-        s.pos = [0, 0, 0];
-        // Null out the velocity so it'll just stay in there.
-        s.vec = [0, 0, 0];
-        console.log('Sat dead.');
-      }
-      const F = (-this.G * e.mass) / (dist * dist);
-      let theta = Math.atan(yd / xd);
-      if (s.pos[0] < 0) {
-        theta = Math.PI / 2 + (Math.PI / 2 + theta);
-      }
-      /*
-      console.log(
-        theta.toFixed(2),
-        'Deg: ', (theta * (180/Math.PI)).toFixed(2),
-        Math.cos(theta).toFixed(2),
-        Math.sin(theta).toFixed(2),
-      );
-      */
-      const xa = Math.cos(theta) * F;
-      const ya = Math.sin(theta) * F;
-      s.vec[0] += xa * dt;
-      s.vec[1] += ya * dt;
-      // console.log(xa, ya);
+				// Now calculate gravity forces
+				const xd = s.pos[0] - e.pos[0];
+				const yd = s.pos[1] - e.pos[1];
+				const dist = Math.sqrt(yd * yd + xd * xd);
+				if (dist < e.radius) {
+					// Sat explodes, or something. So, shove it in the Earth for now
+					s.pos = [0, 0, 0];
+					// Null out the velocity so it'll just stay in there.
+					s.vec = [0, 0, 0];
+					console.log('Sat dead.');
+				}
+				const F = (-this.G * e.mass) / (dist * dist);
+				let theta = Math.atan(yd / xd);
+				if (s.pos[0] < 0) {
+					theta = Math.PI / 2 + (Math.PI / 2 + theta);
+				}
+				const xa = Math.cos(theta) * F;
+				const ya = Math.sin(theta) * F;
+				s.vec[0] += xa * dt;
+				s.vec[1] += ya * dt;
+			});
     });
   }
 
@@ -182,43 +184,26 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
     var ambLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambLight);
 
-    /*
-    var northLight = new THREE.DirectionalLight(0xffffff);
-    northLight.position.set(0, 0, earthBody.radius * 200).normalize();
-    scene.add(northLight);
-
-    var southLight = new THREE.DirectionalLight(0xffffff);
-    southLight.position.set(0, 0, -earthBody.radius * 200).normalize();
-    scene.add(southLight);
-    */
-
     const controls = new OrbitControls(camera, this.renderer.domElement);
 
     //Create Scene with geometry, material-> mesh
     //var earthRail = new THREE.IcosahedronGeometry(10, 4);
-    var earth = new THREE.SphereGeometry(earthBody.radius, 32, 32);
+		this.bodies.filter((b) => b.satbody === false).forEach((p) => {
+			var earth = new THREE.SphereGeometry(earthBody.radius, 32, 32);
 
-    let texture  = new THREE.TextureLoader().load('assets/earthmap1k.jpg');
-    var earthMat = new THREE.MeshPhongMaterial({
-      map: texture,
-    });
-    var earthMesh = new THREE.Mesh(earth, earthMat);
-    scene.add(earthMesh);
+			let texture  = new THREE.TextureLoader().load('assets/earthmap1k.jpg');
+			var earthMat = new THREE.MeshPhongMaterial({
+				map: texture,
+			});
+			var earthMesh = new THREE.Mesh(earth, earthMat);
+			earthMesh.position.set(p.pos[0], p.pos[1], p.pos[2]);
+			scene.add(earthMesh);
+		});
+
 
     var satmeshes: THREE.Mesh[] = [];
     var sattrails: THREE.Line[] = [];
 
-    /*
-    var sun = new THREE.IcosahedronGeometry(20, 4);
-    sun.translate(0, 0, 0);
-    var sunMat = new THREE.MeshBasicMaterial({
-      color: 0xFFFF11,
-      wireframe: true,
-      wireframeLinewidth: 1,
-    });
-    var sunMesh = new THREE.Mesh(sun, sunMat);
-    scene.add(sunMesh);
-    */
 
     console.log("renderer added");
 
