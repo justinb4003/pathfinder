@@ -106,7 +106,7 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
 			this.bodies.filter((b) => b.satbody ===false).forEach((e) => {
 				// console.log('Sat vector', s.vec);
 				s.trailingPoints.push(new Vector3(s.pos[0], s.pos[1], s.pos[2]));
-				if (s.trailingPoints.length > 200) {
+				if (s.trailingPoints.length > 2000) {
 					s.trailingPoints.shift();
 				}
 				const dx = s.vec[0] * dt;
@@ -125,17 +125,17 @@ export class MainDisplayComponent implements OnInit, AfterViewInit {
 				if (dist < e.radius) {
 					// Sat explodes, or something. So, shove it in the Earth for now
 					s.pos = [0, 0, 0];
-					// Null out the velocity so it'll just stay in there.
+          
 					s.vec = [0, 0, 0];
 					console.log('Sat dead.');
 				}
 				const F = (-this.G * e.mass) / (dist * dist);
-				let theta = Math.atan(yd / xd);
+				let ytheta = Math.atan(yd / xd);
 				if (s.pos[0] < 0) {
-					theta = Math.PI / 2 + (Math.PI / 2 + theta);
+					ytheta += Math.PI;
 				}
-				const xa = Math.cos(theta) * F;
-				const ya = Math.sin(theta) * F;
+				const xa = Math.cos(ytheta) * F;
+				const ya = Math.sin(ytheta) * F;
 				s.vec[0] += xa * dt;
 				s.vec[1] += ya * dt;
 			});
